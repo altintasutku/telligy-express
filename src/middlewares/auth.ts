@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "../../env.mjs";
 
-export const protectedMiddleware = async (
+export const protectedRoute = async (
   req: Request,
   res: Response,
   next: NextFunction

@@ -25,6 +25,7 @@ export const categoriesRelations = relations(categories, ({many})=>({
 export const books = pgTable("books", {
   id: serial("id").primaryKey(),
   title: varchar("book_title", { length: 256 }).notNull(),
+  description: text("description").notNull(),
   price: integer("book_price").notNull(),
   banner: text("banner_url").notNull(),
   discount: doublePrecision("discount").notNull(),
