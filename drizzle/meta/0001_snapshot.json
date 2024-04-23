@@ -111,15 +111,12 @@
           "primaryKey": false,
           "notNull": true
         },
-<<<<<<< HEAD
         "description": {
           "name": "description",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-=======
->>>>>>> b6f11f3 (sasasa)
         "book_price": {
           "name": "book_price",
           "type": "integer",
@@ -138,15 +135,6 @@
           "primaryKey": false,
           "notNull": true
         },
-<<<<<<< HEAD
-=======
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
->>>>>>> b6f11f3 (sasasa)
         "pdf_url": {
           "name": "pdf_url",
           "type": "text",
