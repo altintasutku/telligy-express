@@ -18,6 +18,9 @@ export const categories = pgTable("categories", {
   updated_at: timestamp("updated_at").notNull().defaultNow().$onUpdate(()=> new Date()),
 });
 
+export type InsertCategory = typeof categories.$inferInsert
+export type SelectCategory = typeof categories.$inferSelect
+
 export const categoriesRelations = relations(categories, ({many})=>({
   books: many(categoriesToBooks)
 }))
@@ -28,6 +31,7 @@ export const books = pgTable("books", {
   price: integer("book_price").notNull(),
   banner: text("banner_url").notNull(),
   discount: doublePrecision("discount").notNull(),
+  description: text("description").notNull(),
   pdf: text("pdf_url").notNull(),
   cover: text("cover_url").notNull(),
   currency: text("currency"),
@@ -37,6 +41,9 @@ export const books = pgTable("books", {
   deletedAt: timestamp("deleted_at"),
   pageCount: integer("page_count").notNull()
 })
+
+export type InsertBook = typeof books.$inferInsert
+export type SelectBook = typeof books.$inferSelect
 
 export const booksRelations = relations(books, ({many})=>({
   categories: many(categoriesToBooks),
@@ -49,6 +56,9 @@ export const categoriesToBooks = pgTable("categories_to_books", {
 }, (t)=>({
   pk: primaryKey({ columns: [t.categoryId, t.bookId] })
 }))
+
+export type InsertCategoriesToBooks = typeof categoriesToBooks.$inferInsert
+export type SelectCategoriesToBooks = typeof categoriesToBooks.$inferSelect
 
 export const categoriesToBooksRelations = relations(categoriesToBooks, ({one, many})=>({
   book: one(books,{
