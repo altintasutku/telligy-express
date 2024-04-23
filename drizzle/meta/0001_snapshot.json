@@ -1,5 +1,5 @@
 {
-  "id": "8cd1e402-b953-4d43-badb-77854a39e386",
+  "id": "ddf84ebd-0dd1-4d92-8550-69ad029e5f5a",
   "prevId": "bb43ee01-7664-4b77-a0ee-b31736f9ef26",
   "version": "5",
   "dialect": "pg",
@@ -111,12 +111,15 @@
           "primaryKey": false,
           "notNull": true
         },
+<<<<<<< HEAD
         "description": {
           "name": "description",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
+=======
+>>>>>>> b6f11f3 (sasasa)
         "book_price": {
           "name": "book_price",
           "type": "integer",
@@ -135,6 +138,15 @@
           "primaryKey": false,
           "notNull": true
         },
+<<<<<<< HEAD
+=======
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+>>>>>>> b6f11f3 (sasasa)
         "pdf_url": {
           "name": "pdf_url",
           "type": "text",
