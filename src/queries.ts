@@ -18,6 +18,12 @@ export const insertBook = async (book: InsertBook): Promise<SelectBook> => {
   return insertedBook[0];
 };
 
+export const getAllBooks = async (): Promise<SelectBook[]> => {
+  const allBooks = await db.select().from(books);
+
+  return allBooks;
+}
+
 export const insertCategory = async (
   category: InsertCategory
 ): Promise<SelectCategory> => {
