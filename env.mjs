@@ -6,9 +6,9 @@ export const env = createEnv({
     PORT: z.string(),
     DATABASE_URL: z.string(),
     SUPABASE_SECRET: z.string(),
-    IYZICO_URL: z.string(),
-    IYZICO_API_KEY: z.string(),
-    IYZICO_SECRET_KEY: z.string(),
+    // IYZICO_URL: z.string(),
+    // IYZICO_API_KEY: z.string(),
+    // IYZICO_SECRET_KEY: z.string(),
   },
   client: {
     
