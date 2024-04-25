@@ -1,12 +1,15 @@
 import { eq } from "drizzle-orm";
 import db from "./db";
 import {
+  basket,
   books,
   categories,
   categoriesToBooks,
+  type InsertBasket,
   type InsertBook,
   type InsertCategoriesToBooks,
   type InsertCategory,
+  type SelectBasket,
   type SelectBook,
   type SelectCategoriesToBooks,
   type SelectCategory,
@@ -22,7 +25,7 @@ export const getAllBooks = async (): Promise<SelectBook[]> => {
   const allBooks = await db.select().from(books);
 
   return allBooks;
-}
+};
 
 export const insertCategory = async (
   category: InsertCategory
@@ -61,4 +64,32 @@ export const insertCategoryToBook = async (
     .returning();
 
   return insertedCategoryToBook[0];
+};
+
+export const insertBasket = async (
+  data: InsertBasket
+): Promise<SelectBasket> => {
+  const existingBasket = await db
+    .select()
+    .from(basket)
+    .where(eq(basket.userId, data.userId));
+
+  if (existingBasket.length > 0) {
+    return existingBasket[0];
+  }
+
+  const insertedBasket = await db.insert(basket).values(data).returning();
+
+  return insertedBasket[0];
+};
+
+export const getBasket = async (id: number) => {
+  const data = await db.query.basket.findFirst({
+    where: eq(basket.id, id),
+    with: {
+      items: true,
+    },
+  });
+
+  return data;
 };

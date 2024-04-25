@@ -1,1 +1,0 @@
-ALTER TABLE "books" ADD COLUMN "description" text NOT NULL;

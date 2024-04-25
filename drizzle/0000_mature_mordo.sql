@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS "basket" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"user_id" integer NOT NULL,
+	"user_id" uuid NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS "basket_items" (
 CREATE TABLE IF NOT EXISTS "books" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"book_title" varchar(256) NOT NULL,
+	"description" text NOT NULL,
 	"book_price" integer NOT NULL,
 	"banner_url" text NOT NULL,
 	"discount" double precision NOT NULL,
@@ -47,7 +48,7 @@ CREATE TABLE IF NOT EXISTS "comments" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"product_id" integer NOT NULL,
 	"product_type" text NOT NULL,
-	"user_id" integer NOT NULL,
+	"user_id" uuid NOT NULL,
 	"text" text NOT NULL,
 	"score" double precision NOT NULL,
 	"deleted" boolean DEFAULT false NOT NULL,
@@ -70,7 +71,7 @@ CREATE TABLE IF NOT EXISTS "discount_codes" (
 CREATE TABLE IF NOT EXISTS "members" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"membership_id" integer NOT NULL,
-	"user_id" integer NOT NULL,
+	"user_id" uuid NOT NULL,
 	"last_payment_at" timestamp NOT NULL,
 	"next_payment_at" timestamp NOT NULL,
 	"canceled" boolean DEFAULT false NOT NULL,
@@ -90,7 +91,7 @@ CREATE TABLE IF NOT EXISTS "memberships" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_details" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"user_id" integer NOT NULL,
+	"user_id" uuid NOT NULL,
 	"deleted" boolean DEFAULT false NOT NULL,
 	"deleted_at" timestamp,
 	"created_at" timestamp DEFAULT now() NOT NULL,

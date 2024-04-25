@@ -7,6 +7,10 @@ export const protectedRoute = async (
   res: Response,
   next: NextFunction
 ) => {
+  if (!req.headers.authorization) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
   jwt.verify(
     req.headers.authorization!,
     env.SUPABASE_SECRET,
@@ -14,6 +18,13 @@ export const protectedRoute = async (
       if (err) {
         return res.status(401).json({ message: "Unauthorized" });
       }
+
+      const userId = (decoded as any)?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      req.user = userId;
 
       next();
     }
