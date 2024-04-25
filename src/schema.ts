@@ -32,7 +32,6 @@ export const books = pgTable("books", {
   price: integer("book_price").notNull(),
   banner: text("banner_url").notNull(),
   discount: doublePrecision("discount").notNull(),
-  description: text("description").notNull(),
   pdf: text("pdf_url").notNull(),
   cover: text("cover_url").notNull(),
   currency: text("currency"),
