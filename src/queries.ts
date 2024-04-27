@@ -1,11 +1,13 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import db from "./db";
 import {
   basket,
+  basketItems,
   books,
   categories,
   categoriesToBooks,
   type InsertBasket,
+  type InsertBasketItem,
   type InsertBook,
   type InsertCategoriesToBooks,
   type InsertCategory,
@@ -93,3 +95,27 @@ export const getBasket = async (id: number) => {
 
   return data;
 };
+
+export const insertBasketItem = async (data: InsertBasketItem,userId: string) => {
+  let usersBasket = await db.query.basket.findFirst({
+    where: eq(basket.userId, userId),
+  })
+
+  if (!usersBasket) {
+    usersBasket = await insertBasket({
+      userId,
+    })
+  }
+
+  data.basketId = usersBasket.id;
+
+  const insertedItem = await db.insert(basketItems).values(data).returning();
+
+  return insertedItem[0];
+}
+
+export const deleteBasketItem = async (id: number) => {
+  const item = await db.delete(basketItems).where(and(eq(basketItems.id,id))).returning();
+
+  return item;
+}

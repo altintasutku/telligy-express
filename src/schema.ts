@@ -139,6 +139,9 @@ export const basketItems = pgTable("basket_items", {
   updated_at: timestamp("updated_at").notNull().defaultNow().$onUpdate(()=> new Date()),
 })
 
+export type InsertBasketItem = typeof basketItems.$inferInsert
+export type SelectBasketItem = typeof basketItems.$inferSelect
+
 export const basketItemsRelations = relations(basketItems, ({one})=>({
   basket: one(basket,{
     fields:[basketItems.basketId],
@@ -156,3 +159,15 @@ export const discountCodes = pgTable("discount_codes", {
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow().$onUpdate(()=> new Date()),
 })
+
+export const ownedProducts = pgTable("owned_products", {
+  id: serial("id").primaryKey(),
+  userId: uuid("user_id").notNull(),
+  productId: integer("product_id").notNull(),
+  productType: text("product_type").notNull(),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow().$onUpdate(()=> new Date()),
+})
+
+export type InsertOwnedProduct = typeof ownedProducts.$inferInsert
+export type SelectOwnedProduct = typeof ownedProducts.$inferSelect
