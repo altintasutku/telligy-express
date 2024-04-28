@@ -1,12 +1,17 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import db from "./db";
 import {
+  basket,
+  basketItems,
   books,
   categories,
   categoriesToBooks,
+  type InsertBasket,
+  type InsertBasketItem,
   type InsertBook,
   type InsertCategoriesToBooks,
   type InsertCategory,
+  type SelectBasket,
   type SelectBook,
   type SelectCategoriesToBooks,
   type SelectCategory,
@@ -85,3 +90,55 @@ export const insertCategoryToBook = async (
 
   return insertedCategoryToBook[0];
 };
+
+export const insertBasket = async (
+  data: InsertBasket
+): Promise<SelectBasket> => {
+  const existingBasket = await db
+    .select()
+    .from(basket)
+    .where(eq(basket.userId, data.userId));
+
+  if (existingBasket.length > 0) {
+    return existingBasket[0];
+  }
+
+  const insertedBasket = await db.insert(basket).values(data).returning();
+
+  return insertedBasket[0];
+};
+
+export const getBasket = async (id: number) => {
+  const data = await db.query.basket.findFirst({
+    where: eq(basket.id, id),
+    with: {
+      items: true,
+    },
+  });
+
+  return data;
+};
+
+export const insertBasketItem = async (data: InsertBasketItem,userId: string) => {
+  let usersBasket = await db.query.basket.findFirst({
+    where: eq(basket.userId, userId),
+  })
+
+  if (!usersBasket) {
+    usersBasket = await insertBasket({
+      userId,
+    })
+  }
+
+  data.basketId = usersBasket.id;
+
+  const insertedItem = await db.insert(basketItems).values(data).returning();
+
+  return insertedItem[0];
+}
+
+export const deleteBasketItem = async (id: number) => {
+  const item = await db.delete(basketItems).where(and(eq(basketItems.id,id))).returning();
+
+  return item;
+}

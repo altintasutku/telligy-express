@@ -1,19 +1,9 @@
 import { relations } from "drizzle-orm";
-import {
-  boolean,
-  doublePrecision,
-  integer,
-  pgTable,
-  primaryKey,
-  serial,
-  text,
-  timestamp,
-  varchar,
-} from "drizzle-orm/pg-core";
+import { boolean, doublePrecision, integer, pgTable, primaryKey, serial, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const userDetails = pgTable("user_details", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull(),
+  userId: uuid("user_id").notNull(),
   deleted: boolean("deleted").notNull().default(false),
   deletedAt: timestamp("deleted_at"),
   created_at: timestamp("created_at").notNull().defaultNow(),
@@ -121,7 +111,7 @@ export const comments = pgTable("comments", {
   id: serial("id").primaryKey(),
   productId: integer("product_id").notNull(),
   productType: text("product_type").notNull(),
-  userId: integer("user_id").notNull(),
+  userId: uuid("user_id").notNull(),
   content: text("text").notNull(),
   score: doublePrecision("score").notNull(),
   deleted: boolean("deleted").notNull().default(false),
@@ -135,10 +125,8 @@ export const comments = pgTable("comments", {
 
 export const members = pgTable("members", {
   id: serial("id").primaryKey(),
-  membershipId: integer("membership_id")
-    .notNull()
-    .references(() => memberships.id),
-  userId: integer("user_id").notNull(),
+  membershipId: integer("membership_id").notNull().references(()=>memberships.id),
+  userId: uuid("user_id").notNull(),
   lastPaymentAt: timestamp("last_payment_at").notNull(),
   nextPaymentAt: timestamp("next_payment_at").notNull(),
   canceled: boolean("canceled").notNull().default(false),
@@ -159,16 +147,16 @@ export const membersRelations = relations(members, ({ one }) => ({
 
 export const basket = pgTable("basket", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull(),
-  updated_at: timestamp("updated_at")
-    .notNull()
-    .defaultNow()
-    .$onUpdate(() => new Date()),
-});
+  userId: uuid("user_id").notNull(),
+  updated_at: timestamp("updated_at").notNull().defaultNow().$onUpdate(()=> new Date()),
+})
 
-export const basketRelations = relations(basket, ({ many }) => ({
-  items: many(basketItems),
-}));
+export type InsertBasket = typeof basket.$inferInsert
+export type SelectBasket = typeof basket.$inferSelect
+
+export const basketRelations = relations(basket, ({many})=>({
+  items: many(basketItems)
+}))
 
 export const basketItems = pgTable("basket_items", {
   id: serial("id").primaryKey(),
@@ -184,10 +172,13 @@ export const basketItems = pgTable("basket_items", {
     .$onUpdate(() => new Date()),
 });
 
-export const basketItemsRelations = relations(basketItems, ({ one }) => ({
-  basket: one(basket, {
-    fields: [basketItems.basketId],
-    references: [basket.id],
+export type InsertBasketItem = typeof basketItems.$inferInsert
+export type SelectBasketItem = typeof basketItems.$inferSelect
+
+export const basketItemsRelations = relations(basketItems, ({one})=>({
+  basket: one(basket,{
+    fields:[basketItems.basketId],
+    references:[basket.id]
   }),
 }));
 
@@ -199,8 +190,29 @@ export const discountCodes = pgTable("discount_codes", {
   usageCount: integer("usage_count").notNull().default(0),
   deadline: timestamp("deadline").notNull(),
   created_at: timestamp("created_at").notNull().defaultNow(),
-  updated_at: timestamp("updated_at")
-    .notNull()
-    .defaultNow()
-    .$onUpdate(() => new Date()),
-});
+  updated_at: timestamp("updated_at").notNull().defaultNow().$onUpdate(()=> new Date()),
+})
+
+export const ownedProducts = pgTable("owned_products", {
+  id: serial("id").primaryKey(),
+  userId: uuid("user_id").notNull(),
+  productId: integer("product_id").notNull(),
+  productType: text("product_type").notNull(),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow().$onUpdate(()=> new Date()),
+})
+
+export type InsertOwnedProduct = typeof ownedProducts.$inferInsert
+export type SelectOwnedProduct = typeof ownedProducts.$inferSelect
+
+export const purchasedProducts = pgTable("purchased_products", {
+  id: serial("id").primaryKey(),
+  userId: uuid("user_id").notNull(),
+  productId: integer("product_id").notNull(),
+  productType: text("product_type").notNull(),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow().$onUpdate(()=> new Date()),
+})
+
+export type InsertPurchasedProduct = typeof purchasedProducts.$inferInsert
+export type SelectPurchasedProduct = typeof purchasedProducts.$inferSelect
