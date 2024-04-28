@@ -171,3 +171,15 @@ export const ownedProducts = pgTable("owned_products", {
 
 export type InsertOwnedProduct = typeof ownedProducts.$inferInsert
 export type SelectOwnedProduct = typeof ownedProducts.$inferSelect
+
+export const purchasedProducts = pgTable("purchased_products", {
+  id: serial("id").primaryKey(),
+  userId: uuid("user_id").notNull(),
+  productId: integer("product_id").notNull(),
+  productType: text("product_type").notNull(),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow().$onUpdate(()=> new Date()),
+})
+
+export type InsertPurchasedProduct = typeof purchasedProducts.$inferInsert
+export type SelectPurchasedProduct = typeof purchasedProducts.$inferSelect

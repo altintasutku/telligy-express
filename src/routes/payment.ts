@@ -1,6 +1,9 @@
 import axios from "axios";
 import { Router } from "express";
 import { env } from "../../env.mjs";
+import { eq } from "drizzle-orm";
+import { basket, basketItems, purchasedProducts } from "../schema";
+import db from "../db";
 
 const router = Router();
 
@@ -10,49 +13,41 @@ router.post("/test", async (req, res) => {
   res.json(iyzicoRes.data);
 });
 
-router.post("/checkoutform", async (req, res) => {
-  const headers = new Headers();
-  headers.append("Content-Type", "application/json");
-  const randomNumber = Math.floor(Math.random() * 10000).toString();
-  headers.append("x-iyzi-rnd", randomNumber);
+router.post("/confirm", async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 
-  // const data = {
-  //   locale: "tr",
-  //   conversationId: "123456789",
-  //   price: "1.0",
-  //   basketId: "B67832",
-  //   paymentGroup: "PRODUCT",
-  //   buyer: {
-  //     id: "BY789",
-  //     name: "John",
-  //     surname: "Doe",
-  //     identityNumber: "74300864791",
-  //     email: "email@email.com",
-  //     gsmNumber: "+905350000000",
-  //     registrationDate: "2013-04-21 15:12:09",
-  //     lastLoginDate: "2015-10-05 12:43:35",
-  //     registrationAddress: "Nidakule Göztepe, Merdivenköy Mah. Bora Sok. No:1",
-  //     city: "Istanbul",
-  //     country: "Turkey",
-  //     zipCode: "34732",
-  //     ip: "85.34.78.112",
-  //   },
-  //   shippingAddress: {
-  //     address: "",
-  //     zipCode: "",
-  //     contactName: "",
-  //     city: "",
-  //     country: "",
-  //   },
-  //   billingAddress: req.body.billingAddress,
-  //   basketItems: req.body.basketItems,
-  //   enabledInstallments: [1],
-  //   callbackUrl: "https://www.merchant.com/callback",
-  //   currency: "TRY",
-  //   paidPrice: "1.2",
-  // };
+  const usersBasket = await db.query.basket.findFirst({
+    where: eq(basket.userId, req.user),
+    with: {
+      items: true,
+    },
+  });
 
-  // headers.append("Authorization", createAuthHeaders());
+  if (!usersBasket) {
+    return res.status(404).json({ message: "Basket not found" });
+  }
+
+  const userPurchased = await Promise.all(
+    usersBasket.items.map(async (item) => {
+      return (
+        await db
+          .insert(purchasedProducts)
+          .values({
+            productId: item.productId,
+            productType: item.productType,
+            userId: req.user as string,
+          })
+          .returning()
+      )[0];
+    })
+  );
+
+  await db.delete(basketItems).where(eq(basketItems.basketId, usersBasket.id));
+  await db.delete(basket).where(eq(basket.userId, req.user));
+
+  res.json(userPurchased);
 });
 
 export default router;
