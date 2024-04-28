@@ -29,6 +29,29 @@ export const getAllBooks = async (): Promise<SelectBook[]> => {
   return allBooks;
 };
 
+export const getBookById = async (id: number): Promise<SelectBook> => {
+  const book = await db.select().from(books).where(eq(books.id, id));
+
+  return book[0];
+};
+
+export const getAllCategories = async (): Promise<SelectCategory[]> => {
+  const allCategories = await db.select().from(categories);
+
+  return allCategories;
+};
+
+export const getBookIdsBelongToCategory = async (
+  categoryId: number
+): Promise<number[]> => {
+  const booksBelongToCategory = await db
+    .select()
+    .from(categoriesToBooks)
+    .where(eq(categoriesToBooks.categoryId, categoryId));
+
+  return booksBelongToCategory.map((categoryToBook) => categoryToBook.bookId);
+};
+
 export const insertCategory = async (
   category: InsertCategory
 ): Promise<SelectCategory> => {
