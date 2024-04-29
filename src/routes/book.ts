@@ -18,7 +18,17 @@ import { and, eq } from "drizzle-orm";
 const router = Router();
 
 router.post("/", async (req, res) => {
-  const { success, data, error } = uploadBookStateValidator.safeParse(req.body);
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const { success, data, error } = uploadBookStateValidator.safeParse({
+    ...req.body,
+    infos: {
+      ...req.body.infos,
+      authorId: req.user,
+    },
+  });
 
   if (!success || !data) {
     return res.status(400).json({ error });

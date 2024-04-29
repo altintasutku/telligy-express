@@ -24,7 +24,11 @@ export const insertBook = async (book: InsertBook): Promise<SelectBook> => {
 };
 
 export const getAllBooks = async (): Promise<SelectBook[]> => {
-  const allBooks = await db.select().from(books);
+  const allBooks = await db.query.books.findMany({
+    with: {
+      categories: true,
+    },
+  });
 
   return allBooks;
 };
@@ -119,15 +123,18 @@ export const getBasket = async (id: number) => {
   return data;
 };
 
-export const insertBasketItem = async (data: InsertBasketItem,userId: string) => {
+export const insertBasketItem = async (
+  data: InsertBasketItem,
+  userId: string
+) => {
   let usersBasket = await db.query.basket.findFirst({
     where: eq(basket.userId, userId),
-  })
+  });
 
   if (!usersBasket) {
     usersBasket = await insertBasket({
       userId,
-    })
+    });
   }
 
   data.basketId = usersBasket.id;
@@ -135,10 +142,13 @@ export const insertBasketItem = async (data: InsertBasketItem,userId: string) =>
   const insertedItem = await db.insert(basketItems).values(data).returning();
 
   return insertedItem[0];
-}
+};
 
 export const deleteBasketItem = async (id: number) => {
-  const item = await db.delete(basketItems).where(and(eq(basketItems.id,id))).returning();
+  const item = await db
+    .delete(basketItems)
+    .where(and(eq(basketItems.id, id)))
+    .returning();
 
   return item;
-}
+};
