@@ -15,6 +15,8 @@ import {
 export const userDetails = pgTable("user_details", {
   id: serial("id").primaryKey(),
   userId: uuid("user_id").notNull(),
+  displayName: varchar("display_name", { length: 256 }).notNull(),
+  profileImage: text("profile_image"),
   deleted: boolean("deleted").notNull().default(false),
   deletedAt: timestamp("deleted_at"),
   created_at: timestamp("created_at").notNull().defaultNow(),
@@ -23,6 +25,35 @@ export const userDetails = pgTable("user_details", {
     .defaultNow()
     .$onUpdate(() => new Date()),
 });
+
+export type InsertUserDetails = typeof userDetails.$inferInsert;
+export type SelectUserDetails = typeof userDetails.$inferSelect;
+
+export const authorDetails = pgTable("user_details", {
+  id: serial("id").primaryKey(),
+  userId: uuid("user_id").notNull(),
+  deleted: boolean("deleted").notNull().default(false),
+  deletedAt: timestamp("deleted_at"),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at")
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
+export type InsertAuthorDetails = typeof authorDetails.$inferInsert;
+export type SelectAuthorDetails = typeof authorDetails.$inferSelect;
+
+export const authorDetailsRelations = relations(
+  authorDetails,
+  ({ many, one }) => ({
+    books: many(books),
+    userDetails: one(userDetails, {
+      fields: [authorDetails.userId],
+      references: [userDetails.userId],
+    }),
+  })
+);
 
 export const categories = pgTable("categories", {
   id: serial("id").primaryKey(),
@@ -66,9 +97,13 @@ export const books = pgTable("books", {
 export type InsertBook = typeof books.$inferInsert;
 export type SelectBook = typeof books.$inferSelect;
 
-export const booksRelations = relations(books, ({ many }) => ({
+export const booksRelations = relations(books, ({ many, one }) => ({
   categories: many(categoriesToBooks),
   comments: many(comments),
+  author: one(authorDetails, {
+    fields: [books.authorId],
+    references: [authorDetails.userId],
+  }),
 }));
 
 export const categoriesToBooks = pgTable(

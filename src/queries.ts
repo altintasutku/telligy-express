@@ -6,11 +6,13 @@ import {
   books,
   categories,
   categoriesToBooks,
+  userDetails,
   type InsertBasket,
   type InsertBasketItem,
   type InsertBook,
   type InsertCategoriesToBooks,
   type InsertCategory,
+  type InsertUserDetails,
   type SelectBasket,
   type SelectBook,
   type SelectCategoriesToBooks,
@@ -152,3 +154,8 @@ export const deleteBasketItem = async (id: number) => {
 
   return item;
 };
+
+export const insertUserDetails = async (data:InsertUserDetails) => {
+  const res = await db.insert(userDetails).values(data).returning();
+  return res[0];
+}
