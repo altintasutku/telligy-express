@@ -5,6 +5,7 @@ export const migrateDB = async () => {
   console.log("migrating db");
   await migrate(db, { migrationsFolder: "drizzle" });
   console.log("db migrated");
+  process.exit(0);
 };
 
 migrateDB();
