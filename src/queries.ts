@@ -25,11 +25,16 @@ export const insertBook = async (book: InsertBook): Promise<SelectBook> => {
   return insertedBook[0];
 };
 
-export const getAllBooks = async (): Promise<SelectBook[]> => {
+export const getAllBooks = async (query:string | null) => {
   const allBooks = await db.query.books.findMany({
     with: {
-      categories: true,
+      categories: {
+        with:{
+          category: true
+        }
+      },
     },
+    where: query ? (book, { ilike,  }) => ilike(book.title, `%${query}%`) : undefined,
   });
 
   return allBooks;

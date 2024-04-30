@@ -53,7 +53,8 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  const allBooks = await getAllBooks();
+  const query = req.query.search || null
+  const allBooks = await getAllBooks(query as string | null);
 
   return res.status(200).json(allBooks);
 });
