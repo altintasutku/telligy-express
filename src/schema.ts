@@ -277,3 +277,11 @@ export const purchasedProducts = pgTable("purchased_products", {
 
 export type InsertPurchasedProduct = typeof purchasedProducts.$inferInsert;
 export type SelectPurchasedProduct = typeof purchasedProducts.$inferSelect;
+
+export const conversationData = pgTable("conversation_data", {
+  id: serial("id").primaryKey(),
+  conversationId: text("conversation_id").notNull(),
+  value: text("value").notNull(),
+  userId: uuid("user_id").notNull(),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+});

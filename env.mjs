@@ -9,6 +9,8 @@ export const env = createEnv({
     IYZICO_URL: z.string(),
     IYZICO_API_KEY: z.string(),
     IYZICO_SECRET_KEY: z.string(),
+    WEB_URL: z.string(),
+    API_URL: z.string(),
   },
   client: {
     
@@ -20,5 +22,7 @@ export const env = createEnv({
     IYZICO_URL: process.env.IYZICO_URL,
     IYZICO_API_KEY: process.env.IYZICO_API_KEY,
     IYZICO_SECRET_KEY: process.env.IYZICO_SECRET_KEY,
+    WEB_URL: process.env.WEB_URL,
+    API_URL: process.env.API_URL,
   },
 });
