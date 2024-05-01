@@ -12,12 +12,12 @@ import { basket, basketItems } from "../schema";
 const router = Router();
 
 router.get("/", async (req, res) => {
-  if (!req.user) {
+  if (!req.userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
   const basket = await insertBasket({
-    userId: req.user,
+    userId: req.userId,
   });
 
   const data = await getBasket(basket.id);
@@ -26,17 +26,17 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/add-item", async (req, res) => {
-  if (!req.user) {
+  if (!req.userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  const item = await insertBasketItem(req.body, req.user);
+  const item = await insertBasketItem(req.body, req.userId);
 
   return res.status(201).json(item);
 });
 
 router.delete("/remove-item/:id", async (req, res) => {
-  if (!req.user) {
+  if (!req.userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
@@ -51,12 +51,12 @@ router.delete("/remove-item/:id", async (req, res) => {
 });
 
 router.delete("/clear", async (req, res) => {
-  if (!req.user) {
+  if (!req.userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
   const usersBasket = await db.query.basket.findFirst({
-    where: eq(basket.userId, req.user),
+    where: eq(basket.userId, req.userId),
   });
 
   if(!usersBasket) {
@@ -71,7 +71,7 @@ router.delete("/clear", async (req, res) => {
   try {
     await db
     .delete(basket)
-    .where(eq(basket.userId, req.user))
+    .where(eq(basket.userId, req.userId))
   } catch (error) {
     console.error(error);
     
@@ -88,7 +88,7 @@ router.delete("/clear", async (req, res) => {
 });
 
 router.get("/has-item/:producttype/:id", async (req, res) => {
-  if (!req.user) {
+  if (!req.userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
@@ -103,7 +103,7 @@ router.get("/has-item/:producttype/:id", async (req, res) => {
   const productType = req.params.producttype;
 
   const data = await db.query.basket.findFirst({
-    where: eq(basket.userId, req.user),
+    where: eq(basket.userId, req.userId),
     with: {
       items: {
         where: and(

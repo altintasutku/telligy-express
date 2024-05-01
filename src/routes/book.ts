@@ -1,7 +1,5 @@
 import {
   books,
-  categories,
-  categoriesToBooks,
   purchasedProducts,
 } from "./../schema";
 import { Router } from "express";
@@ -18,13 +16,13 @@ import { and, eq } from "drizzle-orm";
 const router = Router();
 
 router.post("/", async (req, res) => {
-  if (!req.user) {
+  if (!req.userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
   const { success, data, error } = uploadBookStateValidator.safeParse({
     ...req.body,
-    authorId: req.user,
+    authorId: req.userId,
   });
 
   if (!success || !data) {
@@ -57,14 +55,14 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/my-books", async (req, res) => {
-  if (!req.user) {
+  if (!req.userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
   const purchased = await db.query.purchasedProducts.findMany({
     where: and(
       eq(purchasedProducts.productType, "book"),
-      eq(purchasedProducts.userId, req.user)
+      eq(purchasedProducts.userId, req.userId)
     ),
   });
 
@@ -83,7 +81,7 @@ router.get("/my-books", async (req, res) => {
 });
 
 router.get("/has-book/:id", async (req, res) => {
-  if (!req.user) {
+  if (!req.userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
@@ -95,7 +93,7 @@ router.get("/has-book/:id", async (req, res) => {
     where: and(
       eq(purchasedProducts.productId, parseInt(req.params.id)),
       eq(purchasedProducts.productType, "book"),
-      eq(purchasedProducts.userId, req.user)
+      eq(purchasedProducts.userId, req.userId)
     ),
   });
 

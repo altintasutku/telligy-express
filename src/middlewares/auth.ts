@@ -24,7 +24,8 @@ export const protectedRoute = async (
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      req.user = userId;
+      req.userId = userId;
+      req.user = decoded as any;
 
       next();
     }

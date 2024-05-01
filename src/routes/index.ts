@@ -9,7 +9,7 @@ import { Router } from "express";
 
 const router = Router();
 
-router.use("/payment", protectedRoute, payment);
+router.use("/payment", payment);
 router.use("/book", protectedRoute, book);
 router.use("/basket", protectedRoute, basket);
 router.use("/product", protectedRoute, product);
