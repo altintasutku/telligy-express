@@ -24,17 +24,14 @@ router.post("/", async (req, res) => {
 
   const { success, data, error } = uploadBookStateValidator.safeParse({
     ...req.body,
-    infos: {
-      ...req.body.infos,
-      authorId: req.user,
-    },
+    authorId: req.user,
   });
 
   if (!success || !data) {
     return res.status(400).json({ error });
   }
 
-  const book = await insertBook(data.infos);
+  const book = await insertBook(data);
 
   const categories = await Promise.all(
     data.categories.map((category) => insertCategory(category))
@@ -53,7 +50,7 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  const query = req.query.search || null
+  const query = req.query.search || null;
   const allBooks = await getAllBooks(query as string | null);
 
   return res.status(200).json(allBooks);
