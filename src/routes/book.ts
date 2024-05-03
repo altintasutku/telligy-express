@@ -62,7 +62,7 @@ router.get("/my-books", async (req, res) => {
   const purchased = await db.query.purchasedProducts.findMany({
     where: and(
       eq(purchasedProducts.productType, "book"),
-      eq(purchasedProducts.userId, req.userId)
+      eq(purchasedProducts.userId, req.userId),
     ),
   });
 
@@ -79,6 +79,22 @@ router.get("/my-books", async (req, res) => {
 
   return res.status(200).json(myBooks);
 });
+
+router.get("/my-published", async (req,res) => {
+  if (!req.userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const myBooks = await db.query.books.findMany({
+    where: eq(books.authorId, req.userId),
+    with: {
+      categories: true,
+    },
+  });
+
+  return res.status(200).json(myBooks);
+})
+
 
 router.get("/has-book/:id", async (req, res) => {
   if (!req.userId) {
